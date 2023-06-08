@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+
+    <title>imagePracTest</title>
+
+    <style>
+        * {
+            font-family: 'Jua', sans-serif;
+        }
+
+        .wrap {
+            margin: auto;
+            width: 900px;
+        }
+
+        .title {
+            background-color: gainsboro;
+            padding: 20px 30px;
+        }
+
+        .form-group {
+            margin: 10px 0;
+        }
+
+        .posting-box {
+            margin: 10px auto 30px auto;
+            width: 500px;
+            border: 3px solid black;
+            border-radius: 5px;
+            padding: 25px;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            listing();
+        })
+
+        function listing() {
+            fetch('/listing').then((res) => res.json()).then((data) => {
+                //console.log(data)
+
+                if (data['result'] == "success") {
+                    let images = data['images']
+
+                    images.forEach((img) => {
+                        let title = img['title']
+                        let comment = img['comment']
+                        let file = img['file']
+                        let date = file.substr(5, 13)
+
+                        let tmp_html =
+                            `<div class="col">
+                                <div class="card h-100">
+                                    <img src="../static/${file}" class="card-img-top" style="max-height: 300px">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${title}</h5>
+                                        <p class="card-text">${comment}</p>
+                                    </div>
+                                    <div class="card-footer">
+                                        <small class="text-muted">${date}</small>
+                                    </div>
+                                </div>
+                            </div>`
+
+                        $('#cards-box').append(tmp_html)
+                    })
+                }
+            });
+        }
+
+        function posting() {
+            let title = $('#img-title').val()
+            let comment = $('#img-comment').val()
+            let file = $('#img-file')[0].files[0]
+
+            let form_data = new FormData();
+            form_data.append("file_give", file)
+            form_data.append("title_give", title)
+            form_data.append("comment_give", comment)
+
+            fetch('/posting', { method: "POST", body: form_data }).then((res) => res.json()).then((data) => {
+                alert(data['result'])
+                window.location.reload()
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="title">
+            <h1 class="'display-4">파일 업로드</h1>
+            <hr class="my-4">
+            <div class="posting-box" id="post-box">
+                <!--이미지 업로더-->
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="img-file">
+                    <label class="custom-file-label" for="img-file">Choose File</label>
+                </div>
+                <!--이미지 제목 및 코멘트-->
+                <div class="form-group">
+                    <label>사진 제목</label>
+                    <input type="email" class="form-control" aria-describedby="emailHelp" id="img-title" placeholder="">
+                </div>
+                <div class="form-group">
+                    <label>간단 코멘트</label>
+                    <input type="email" class="form-control" id="img-comment" placeholder="">
+                </div>
+                <button type="submit" onclick="posting()" class="btn-primary">업로드하기</button>
+            </div>
+        </div>
+        <div class="row row-cols-1 row-cols-md-3 g-4" id="cards-box">
+
+        </div>
+    </div>
+</body>
+
+</html>
