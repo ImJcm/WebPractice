@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>Document</title>
+
+    <script>
+        function hey() {
+            /*
+            fetch("/test").then(res => res.json()).then(data => {
+                console.log(data)
+            })
+            */
+            let formData = new FormData();
+            formData.append("title_give", "블랙팬서");
+            
+            /*
+                GET방식의 fetch의 경우, fetch("url or path")의 형태로 추가적인 option을 지정하지 않는 것같다.
+                get fetch : fetch("url")
+                            .then((response) => response.json())
+                            .then((data) => console.log(data))
+                post fetch : fetch("/test", { method: "POST", body: formData })
+                            .then(res => res.json())
+                            .then(data => {console.log(data)})
+            */
+
+            //"/test"로 post 방식으로 formData 요청보내기 -> return을 통해 response가 data로 전달됨
+            //즉, fetch의 요청으로 app.py에서 동작 수행 후, 결과가 data에 담긴다.
+            fetch("/test", { method: "POST", body: formData }).then(res => res.json()).then(data => {
+                console.log(data)
+                //data = {'result':'success', 'msg': '이 요청은 POST!'}
+            })
+        }
+
+
+    </script>
+</head>
+
+<body>
+    <h1>제목을 입력합니다</h1>
+    <button onclick="hey()">나는 버튼!</button>
+</body>
+
+</html>
